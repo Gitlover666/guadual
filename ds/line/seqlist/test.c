@@ -36,6 +36,9 @@ int main(int argc, const char *argv[])
     printf("seqlist L length is %d\n", get_length_seqlist(L));
     show_seqlist(L);
     puts("================================");
+    delete_seqlist(L, 4);
+
+    show_seqlist(L);
     clear_seqlist(L);
     
     return 0;
