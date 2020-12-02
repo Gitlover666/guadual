@@ -1,0 +1,10 @@
+CC = gcc
+CFLAGS =-O0 -g -Wall
+
+test:test.c btree.c linkqueue.c linkstack.c
+	$(CC) $(CFLAGS) -o $@ $^
+
+.PHONY:clean
+clean:
+	rm -rf test
+	
