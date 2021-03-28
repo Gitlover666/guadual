@@ -1,0 +1,155 @@
+/*@!Encoding:936*/
+includes
+{
+
+}
+
+/*
+arr是触发标志位
+cout是计数标志位
+per是周期标志位
+*/
+
+variables
+{
+  int cout1[20];
+  int arr1[20];
+  int per1[7];
+  //在这里改变次数
+  int N1[9]={1, 2, 4, 5, 10, 15, 20, 25, 30};
+  //int N1[9]={1, 2, 4, 5, 30, 30, 40, 50, 60};未满负载
+  int c11, c22, c33=0;
+  //定义低重要程度的报文
+  message 0x41 Low_message1 = {dlc=8};
+  message 0x42 Low_message2 = {dlc=8};
+  message 0x43 Low_message3 = {dlc=8};
+  message 0x44 Low_message4 = {dlc=8};
+  message 0x45 Low_message5 = {dlc=8};
+  message 0x46 Low_message6 = {dlc=8};
+  message 0x47 Low_message7 = {dlc=8};
+  message 0x48 Low_message8 = {dlc=8};
+  message 0x49 Low_message9 = {dlc=8};
+  message 0x50 Low_message10 = {dlc=8};
+} 
+
+low_task()
+{
+  
+  if(per1[3] >= N1[4])
+  {
+    per1[3]=0;
+    arr1[10]=0;  
+    arr1[11]=0;  
+  }
+  
+  if(per1[4] >= N1[5])
+  {
+    per1[4] = 0;
+    arr1[12] = 0;
+    arr1[13] = 0; 
+  }
+  
+  if(per1[5] >= N1[6])
+  {
+    per1[5] = 0;
+    arr1[14] = 0; 
+    arr1[15] = 0;
+  }
+  
+  if(per1[1] >= N1[7])
+  {
+    per1[1] = 0;
+    arr1[16] = 0;
+    arr1[17] = 0;
+  }
+  
+  if(per1[2] >= N1[8])
+  {
+    per1[2] = 0;
+    arr1[18] = 0; 
+    arr1[19] = 0;   
+  }
+  
+  for(c22=10; c22<20; c22++)
+  {
+    c33 = arr1[c22] + c33;
+  }
+  
+  if(arr1[10] == 0)
+  {
+   output(Low_message1);
+   arr1[10] = 1;
+  }
+  
+  if(arr1[11] == 0)
+  {
+    output(Low_message2);
+    arr1[11] = 1;
+  }
+  
+  if(arr1[12] == 0)
+  {
+    output(Low_message3);
+    arr1[12] = 1;
+  }
+  
+  if(arr1[13] == 0)
+  {
+    output(Low_message4);
+    arr1[13] = 1;
+  }
+  if(arr1[14] == 0)
+  {
+    output(Low_message5);
+    arr1[14] = 1;
+  }
+  
+  //周期为20ms
+  if(arr1[15] == 0)
+  {
+    arr1[15] = 1;
+    output(Low_message6);
+  }
+  
+  if(arr1[16] == 0)
+  {
+    output(Low_message7);
+    arr1[16] = 1;
+  }
+  
+  if(arr1[17] == 0)
+  {
+    output(Low_message8);
+    arr1[17] = 1;
+  }
+  if(arr1[18] == 0)
+  {
+    output(Low_message9);
+    arr1[18]=1;
+  }
+  if(arr1[19] == 0)
+  {
+    output(Low_message10);
+    arr1[19] = 1;
+  }
+  
+  per1[0]++;
+  per1[1]++;  
+  per1[2]++;
+  per1[3]++;
+  per1[4]++;
+  per1[5]++;
+  c11 = c33;
+
+  c33 = 0;
+}
+
+
+
+
+
+
+
+
+
+

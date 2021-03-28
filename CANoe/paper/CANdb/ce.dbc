@@ -1,0 +1,162 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: Low_node High_node
+
+
+BO_ 74 LMessage_10: 1 Low_node
+ SG_ LSignal_10 : 0|8@1- (1,0) [0|0] "" Vector__XXX
+
+BO_ 73 LMessage_9: 1 Low_node
+ SG_ LSignal_9 : 0|8@1- (1,0) [0|0] "" Vector__XXX
+
+BO_ 72 LMessage_8: 1 Low_node
+ SG_ LSignal_8 : 0|8@1- (1,0) [0|0] "" Vector__XXX
+
+BO_ 71 LMessage_7: 1 Low_node
+ SG_ LSignal_7 : 0|8@1- (1,0) [0|0] "" Vector__XXX
+
+BO_ 70 LMessage_6: 1 Low_node
+ SG_ LSignal_6 : 0|8@1- (1,0) [0|0] "" Vector__XXX
+
+BO_ 69 LMessage_5: 1 Low_node
+ SG_ LSignal_5 : 0|8@1- (1,0) [0|0] "" Vector__XXX
+
+BO_ 68 LMessage_4: 1 Low_node
+ SG_ LSignal_4 : 0|8@1- (1,0) [0|0] "" Vector__XXX
+
+BO_ 67 LMessage_3: 1 Low_node
+ SG_ LSignal_3 : 0|8@1- (1,0) [0|0] "" Vector__XXX
+
+BO_ 66 LMessage_2: 1 Low_node
+ SG_ LSignal_2 : 0|8@1- (1,0) [0|0] "" Vector__XXX
+
+BO_ 65 LMessage_1: 1 Low_node
+ SG_ LSignal_1 : 0|8@1- (1,0) [0|0] "" Vector__XXX
+
+BO_ 1 HMessage_1: 8 High_node
+ SG_ HSignal_1 : 0|1@1- (1,0) [0|10] "" Vector__XXX
+
+BO_ 10 HMessage_10: 8 High_node
+ SG_ HSignal_10 : 0|8@1- (1,0) [0|0] "" Vector__XXX
+
+BO_ 9 HMessage_9: 8 High_node
+ SG_ HSignal_9 : 0|8@1- (1,0) [0|0] "" Vector__XXX
+
+BO_ 8 HMessage_8: 8 High_node
+ SG_ HSignal_8 : 0|8@1- (1,0) [0|0] "" Vector__XXX
+
+BO_ 7 HMessage_7: 8 High_node
+ SG_ HSignal_7 : 0|8@1- (1,0) [0|0] "" Vector__XXX
+
+BO_ 6 HMessage_6: 8 High_node
+ SG_ HSignal_6 : 0|8@1- (1,0) [0|0] "" Vector__XXX
+
+BO_ 5 HMessage_5: 8 High_node
+ SG_ HSignal_5 : 0|8@1- (1,0) [0|0] "" Vector__XXX
+
+BO_ 4 HMessage_4: 8 High_node
+ SG_ HSignal_4 : 0|8@1- (1,0) [0|0] "" Vector__XXX
+
+BO_ 3 HMessage_3: 8 High_node
+ SG_ HSignal_3 : 0|8@1- (1,0) [0|0] "" Vector__XXX
+
+BO_ 2 HMessage_2: 8 High_node
+ SG_ HSignal_2 : 0|8@1- (1,0) [0|0] "" Vector__XXX
+
+
+
+EV_ EnvKlemme30: 0 [0|1] "" 1 1 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+EV_ EnvKlemme15: 0 [0|1] "" 0 2 DUMMY_NODE_VECTOR0 Vector__XXX;
+
+BA_DEF_ BU_  "NodeLayerModules" STRING ;
+BA_DEF_ BO_  "GenMsgStartDelayTime" INT 0 65535;
+BA_DEF_ SG_  "NWM-WakeupAllowed" ENUM  "No","Yes";
+BA_DEF_ BO_  "NmMessage" ENUM  "no","yes";
+BA_DEF_ BO_  "GenMsgILSupport" ENUM  "No","Yes";
+BA_DEF_ BU_  "NmNode" ENUM  "no","yes";
+BA_DEF_ BU_  "NmStationAddress" INT 0 63;
+BA_DEF_  "NmBaseAddress" HEX 1024 1087;
+BA_DEF_ BO_  "GenMsgCycleTimeFast" INT 0 50000;
+BA_DEF_  "BusType" STRING ;
+BA_DEF_ BO_  "GenMsgCycleTime" INT 0 50000;
+BA_DEF_ BO_  "GenMsgDelayTime" INT 0 1000;
+BA_DEF_ BO_  "GenMsgNrOfRepetition" INT 0 999999;
+BA_DEF_ BO_  "GenMsgSendType" ENUM  "Cyclic","NotUsed","NotUsed","NotUsed","NotUsed","NotUsed","NotUsed","IfActive","NoMsgSendType","NotUsed","vector_leerstring";
+BA_DEF_ SG_  "GenSigInactiveValue" INT 0 100000;
+BA_DEF_ SG_  "GenSigSendType" ENUM  "Cyclic","OnWrite","OnWriteWithRepetition","OnChange","OnChangeWithRepetition","IfActive","IfActiveWithRepetition","NoSigSendType","NotUsed","NotUsed","NotUsed","NotUsed","NotUsed";
+BA_DEF_ SG_  "GenSigStartValue" FLOAT 0 100000000000;
+BA_DEF_DEF_  "NodeLayerModules" "CANoeILNLVector.dll";
+BA_DEF_DEF_  "GenMsgStartDelayTime" 0;
+BA_DEF_DEF_  "NWM-WakeupAllowed" "";
+BA_DEF_DEF_  "NmMessage" "no";
+BA_DEF_DEF_  "GenMsgILSupport" "Yes";
+BA_DEF_DEF_  "NmNode" "no";
+BA_DEF_DEF_  "NmStationAddress" 0;
+BA_DEF_DEF_  "NmBaseAddress" 1024;
+BA_DEF_DEF_  "GenMsgCycleTimeFast" 0;
+BA_DEF_DEF_  "BusType" "";
+BA_DEF_DEF_  "GenMsgCycleTime" 0;
+BA_DEF_DEF_  "GenMsgDelayTime" 0;
+BA_DEF_DEF_  "GenMsgNrOfRepetition" 0;
+BA_DEF_DEF_  "GenMsgSendType" "NoMsgSendType";
+BA_DEF_DEF_  "GenSigInactiveValue" 0;
+BA_DEF_DEF_  "GenSigSendType" "Cyclic";
+BA_DEF_DEF_  "GenSigStartValue" 0;
+BA_ "NmStationAddress" BU_ Low_node 2;
+BA_ "NmStationAddress" BU_ High_node 1;
+BA_ "GenMsgCycleTime" BO_ 74 20;
+BA_ "GenMsgCycleTime" BO_ 73 18;
+BA_ "GenMsgCycleTime" BO_ 72 16;
+BA_ "GenMsgCycleTime" BO_ 71 16;
+BA_ "GenMsgCycleTime" BO_ 70 14;
+BA_ "GenMsgCycleTime" BO_ 69 14;
+BA_ "GenMsgCycleTime" BO_ 68 12;
+BA_ "GenMsgCycleTime" BO_ 67 12;
+BA_ "GenMsgCycleTime" BO_ 66 10;
+BA_ "GenMsgCycleTime" BO_ 65 10;
+BA_ "GenMsgSendType" BO_ 1 0;
+BA_ "GenMsgCycleTime" BO_ 1 1;
+BA_ "GenMsgCycleTime" BO_ 10 15;
+BA_ "GenMsgCycleTime" BO_ 9 10;
+BA_ "GenMsgCycleTime" BO_ 8 10;
+BA_ "GenMsgCycleTime" BO_ 7 6;
+BA_ "GenMsgCycleTime" BO_ 6 6;
+BA_ "GenMsgCycleTime" BO_ 5 6;
+BA_ "GenMsgCycleTime" BO_ 4 2;
+BA_ "GenMsgCycleTime" BO_ 3 2;
+BA_ "GenMsgCycleTime" BO_ 2 1;
+

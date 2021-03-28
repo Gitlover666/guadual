@@ -1,0 +1,768 @@
+/*@!Encoding:936*/
+//这些操作是满足CAN总线的规则的
+/*
+功能：高优先级组在一定时间内满足一定的发送次数时，则在下次进行发送之前进行优先级反转，高->低，0->1，反转以后需要查看是否可以发送，查询是否满足发送条件，满足发送，不满足的话则继续查询，
+      直到该周期时间运行结束后，停止查询，此时优先级会从低->高，1->0，变为原来的高优先级继续发送，紧接着上面的循环执行。
+
+      高优先级未进行反转之前可以直接发送，无须判断是否能够直接发出，因为只要发送到总线上后，迟早会执行，无非时间早晚的问题。
+      而高优先级反转为低以后必须需要查询是因为，如果不查询是否满足发送条件的话很有可能会产生很严重的阻塞，导致虽然发送了，但是迟迟得不到执行，
+      很有可能会产生一种情况，就是当由低重新变为高以后发送的报文会在上次低的报文之前执行，这样就会产生很大的问题，故必须查询。
+exp:
+    第一次    0
+    第二次    0
+              0
+              1
+              0
+              ...
+*/
+includes
+{
+  #include "Low_node.can"
+}
+/*
+MAX最大发送次数：一定时间内的最大发送次数，超过该次数，是触发高优先级反转的条件之一。
+
+total周期时间“一定时间”：当per[10]到达该值以后，会触发清零操作，将cout的0-9清零。
+
+cout[20]是发送次数标志位：0-9是用来控制具体每一个报文的循环发送次数，若大于三次后，是执行高优先级反转的条件之一；
+                      10-19是用来防止到达total规定的时间以后，0-9会被清零，若N[0]*MAX < total，则利用10-19把上一次0-9的值重新赋给它们。
+
+arr[10]是发送标志位： 0-9是用来控制具体每一个报文未反转时的发送/关闭，为1时不发送，为0时开启发送。
+                      注：发送时需要满足一定的ID要求。
+
+N[9]发送周期：0-8定义每一个报文的发送周期，第9位作为优先级触发条件之一，为1触发，0关闭。
+
+per[11]是时间计数标志位：0-10每执行一次都自动加1，每一位分别有不同的阈值，到达指定值以后，会触发清零操作，重新计时。
+                          注：这里的阈值是指报文发送的周期N。
+
+b[10]：高优先级反转后满足一定条件加1，若大于1，则会c4加1。
+
+a[11]：满足N[3]*MAX < total条件加1，是高优先级反转以后能够正常发送的仲裁条件之一，到达4后置1，a[10]是计算每次偷渡次数
+
+c3：储存着名义上的每次发送未运行的数量 ，不准确的。
+
+c4：储存着真实动态的发送数量，运行过程中伴随着偷渡的增加与减少，每次运行不影响最后结果，每运行一次数量减4。
+
+c5：当前真实的发送数量，不含偷渡。
+
+    注：偷渡的意思是，由高变低以后若第一次发送不成功，若不超时则继续申请发送，会增加c4发送的数量
+*/
+//定义变量
+variables
+{
+  int MAX = 3;
+  int total = 4;
+  int cout[20];
+  int arr[10];
+  int N[9]={1, 3, 5, 8, 10, 20, 50, 1, 1};
+  //int N[9]={1, 3, 6, 8, 13, 20, 50, 1, 1};未满负载
+  int per[11];
+  int b[10];
+  int a[11];
+  int c1, c3, c4, c5;
+  
+  //定义高重要程度的报文
+  message 0x1 High_message1 = {dlc=8};
+  message 0x2 High_message2 = {dlc=8};
+  message 0x3 High_message3 = {dlc=8};
+  message 0x4 High_message4 = {dlc=8};
+  message 0x5 High_message5 = {dlc=8};
+  message 0x6 High_message6 = {dlc=8};
+  message 0x7 High_message7 = {dlc=8};
+  message 0x8 High_message8 = {dlc=8};
+  message 0x9 High_message9 = {dlc=8};
+  message 0x10 High_message10 = {dlc=8};
+  //定义定时器
+  mstimer mscycle;
+} 
+
+//所有程序的start接口
+on start
+{ 
+  //开启定时器
+  setTimer(mscycle,1);
+  //将所有的报文一开始设置为不发送
+  for(c1=0; c1<10; c1++)
+  {
+    arr[c1] = 1;
+  }
+  for(c1=10; c1<20; c1++)
+  {
+    arr1[c1] = 1;
+  }
+}
+
+//主程序：到达定时时间执行下面程序
+on timer mscycle
+{
+  time_clear();
+
+  low_task();
+  
+  cout_inversion();
+  
+  high_normal_task();
+  
+  //判断是否有高优先级变低，如果有且满足执行条件，则计算c5，来判断此次真实的发送次数，如果满足条件发送反转后报文
+  if(a[10] > 0 && N[8] == 1)
+  {
+    c5 = c4 - a[10];
+    inversion_output();
+  }
+  
+  clear_mark();
+
+  setTimer(mscycle,1);
+}
+
+/*
+函数功能：1.每当per到达某一阈值周期以后，会设置清零；
+          2.判断是否有报文连续total毫秒内持续发送超过max次；
+          3.满足N[0]*MAX < total条件后，实现a累加，超过4时，作为提供后续偷渡的发送条件之一
+          4.对不发送的ID计数
+*/
+time_clear()
+{
+  //计数开始
+  per[0]++;
+  per[1]++;
+  per[2]++;
+  per[3]++;
+  per[4]++;
+  per[5]++;
+  per[6]++;
+  per[8]++;
+  per[7]++;
+  per[9]++;
+  per[10]++;
+  //总体上判断是否有报文连续total毫秒内持续发送超过max次，不管有没有超过，3毫秒内将各个报文的计数标志位清零
+  if(per[10] > total)
+  {
+    per[10] = 1;
+    for(c1=0; c1<10; c1++)
+    {
+      cout[c1] = 0;
+    }
+  }
+  //设置周期1毫秒，清零触发标志位，同时判断是否满足N[0]*MAX < total反转条件，满足的话这里a++，设置大于4清1的目的是满足最大次数的条件；
+  if(per[0] >= N[0])
+  {
+    per[0] = 0;
+    arr[0] = 0;
+    if(N[0] * MAX < total)
+    {
+      a[0]++;
+      if(a[0] > MAX + 1)
+      {
+        a[0] = 1;
+        b[0] = 0;
+      }
+    }
+  }
+  
+  if(per[6] >= N[7])
+  {
+    per[6] = 0;
+    arr[1] = 0;
+    if(N[7] * MAX < total)
+    {
+      a[1]++;
+      if(a[1] > MAX + 1)
+      {
+        a[1] = 1;
+        b[1] = 0;
+      }
+    }   
+  }
+  
+  if(per[1] >= N[1])
+  {
+    per[1] = 0;
+    arr[2] = 0;
+    if(N[1] * MAX < total)
+    {
+      a[2]++;
+      if(a[2] > MAX + 1)
+      {
+        a[2] = 1;
+        b[2] = 0;
+      }
+    } 
+  }
+  
+  if(per[2] >= N[1])
+  {
+    per[2] = 0;
+    arr[3] = 0;
+    if(N[1] * MAX < total)
+    {
+      a[3]++;
+      if(a[3] > MAX + 1)
+      {
+        a[3] = 1;
+        b[3] = 0;
+      }
+    }
+  }
+  
+  if(per[3] >= N[2])
+  {
+    per[3] = 0;
+    arr[4] = 0;
+    if(N[2] * MAX < total)
+    {
+      a[4]++;
+      if(a[4] > MAX + 1)
+      {
+        a[4] = 1;
+        b[4] = 0;
+      }
+    }  
+  }
+  
+  if(per[4] >= N[2])
+  {
+    per[4] = 0;
+    arr[5] = 0;
+    if(N[2] * MAX < total)
+    {
+      a[5]++;
+      if(a[5] > MAX + 1)
+      {
+        a[5] = 1;
+        b[5] = 0;
+      }
+    } 
+  }
+  
+  if(per[5] >= N[3])
+  {
+    per[5] = 0;
+    arr[6] = 0; 
+    if(N[3] * MAX < total)
+    {
+      a[6]++;
+      if(a[6] > MAX + 1)
+      {
+        a[6] = 1;
+        b[6] = 0;
+      }
+    }
+  }
+  
+  if(per[7] >= N[3])
+  {
+    per[7] = 0;
+    arr[7] = 0;
+    if(N[3] * MAX < total)
+    {
+      a[7]++;
+      if(a[7] > MAX + 1)
+      {
+        a[7] = 1;
+        b[7] = 0;
+      }
+    }
+  }
+  
+  if(per[8] >= N[4])
+  {
+    per[8] = 0;
+    arr[8] = 0; 
+    if(N[4] * MAX < total)
+    {
+      a[8]++;
+      if(a[8] > MAX + 1)
+      {
+        a[8] = 1;
+        b[8] = 0;
+      }
+    } 
+  }
+  
+  if(per[9] >= N[4])
+  {
+    per[9] = 0;
+    arr[9] = 0;  
+    if(N[4] * MAX < total)
+    {
+      a[9]++;
+      if(a[9] > MAX + 1)
+      {
+        a[9] = 1;
+        b[9] = 0;
+      }
+    }
+  }
+  //对不发送的ID计数
+  for(c1=0; c1<10; c1++)
+  {
+    c3 = arr[c1] + c3;
+  }
+}
+
+/*
+函数功能：1.a[10]每毫秒得到每次反转以后需要发送发转的总数
+          2.如果b[0]大于1，则将c4加1，相当于反转到低以后，如果还满足条件能够访问则累加。
+          3.经过上面c4的累加以后，得到一个虚拟的当前发送数量，含有偷渡值,c11代表低优先级组的不发送ID的数量
+*/
+cout_inversion()
+{
+  if(a[0] == MAX+1 && N[8] == 1)
+  {
+    a[10]++;
+    b[0]++;
+    if(b[0] > 1)
+    {
+      c4++;
+    }
+  }
+  
+  if(a[1] == MAX+1 && N[8] == 1)
+  {
+    a[10]++;
+    b[1]++;
+    if(b[1] > 1)
+    {
+      c4++;
+    }
+  }
+  
+  if(a[2] == MAX+1 && N[8] == 1)
+  {
+    a[10]++;
+    b[2]++;
+    if(b[2] > 1)
+    {
+      c4++;
+    }
+  }
+  
+  if(a[3] == MAX+1 && N[8] == 1)
+  {
+    a[10]++;
+    b[3]++;
+    if(b[3] > 1)
+    {
+      c4++;
+    }
+  }
+  
+  if(a[4] == MAX+1 && N[8] == 1)
+  {
+    a[10]++;
+    b[4]++;
+    if(b[4] > 1)
+    {
+      c4++;
+    }
+  }
+  
+  if(a[5] == MAX+1 && N[8] == 1)
+  {
+    a[10]++;
+    b[5]++;
+    if(b[5] > 1)
+    {
+      c4++;
+    }
+  }
+  
+  if(a[6] == MAX+1 && N[8] == 1)
+  {
+    a[10]++;
+    b[6]++;
+    if(b[6] > 1)
+    {
+      c4++;
+    }
+  }
+  
+  if(a[7] == MAX+1 && N[8] == 1)
+  {
+    a[10]++;
+    b[7]++;
+    if(b[7] > 1)
+    {
+      c4++;
+    }
+  }
+  
+  if(a[8] == MAX+1 && N[8] == 1)
+  {
+    a[10]++;
+    b[8]++;
+    if(b[8] > 1)
+    {
+      c4++;
+    }
+  }
+  
+  if(a[9] == MAX+1 && N[8] == 1)
+  {
+    a[10]++;
+    b[9]++;
+    if(b[9] > 1)
+    {
+      c4++;
+    }
+  }
+  //经过上面c4的累加以后，得到一个虚拟的当前发送数量，含有偷渡值
+  c3 = c3 + c11;
+  c4 = c4 + 20-c3;
+}
+
+/*
+函数功能：1.发送未反转的高优先级组的消息，只有未反转时才可以发送
+          2.设置cout[0]来记录发送次数,设置cout[10]来恢复当满足一定条件时上一次的cout[0]的值
+          3.在规定时间内发送三次将其ID进行反转，将最高位的0->1，同时清空计数标志
+*/
+high_normal_task()
+{
+  if(arr[0] == 0)
+  {
+    arr[0] = 1;
+    if(cout[0] == 0 && N[0] * MAX < total && N[8] == 1)
+    {
+      cout[0] = cout[10];
+    }
+    cout[10]++;  
+    cout[0]++;
+    //判断是否大于三次
+    High_message1.id = 0x1;
+    if(cout[0] > MAX && N[8] == 1)
+    {
+      High_message1.id = High_message1.id | 0x80;
+      cout[0] = 0;
+      cout[10] = 0;
+    }
+    if(High_message1.id == 0x1)
+    {
+      output(High_message1); 
+    }
+  }  
+  //周期2毫秒
+
+  if(arr[1] == 0)
+  {
+    
+    arr[1] = 1;
+    if(cout[1] == 0 && N[7] * MAX < total && N[8] == 1)
+    {
+      cout[1] = cout[11];
+    }
+    cout[11]++;
+    cout[1]++;
+    
+    High_message2.id = 0x2;
+    if(cout[1] > MAX && N[8] == 1)
+    {
+      High_message2.id = High_message2.id | 0x80;
+      cout[1] = 0;
+      cout[11] = 0;
+   
+    }
+    if(High_message2.id == 0x2)
+    {
+      output(High_message2);
+    }
+  }
+
+  if(arr[2] == 0)
+  {
+    arr[2] = 1;
+    if(cout[2] == 0 && N[1] * MAX < total && N[8] == 1)
+    {
+      cout[2] = cout[12];
+    }
+    cout[12]++;
+    cout[2]++;
+    High_message3.id = 0x3;
+    if(cout[2] > MAX && N[8] == 1)
+    {
+      High_message3.id = High_message3.id | 0x80;
+      cout[2] = 0;
+      cout[12] = 0;
+    }
+   if(High_message3.id == 0x3)
+    {
+      output(High_message3);
+    }  
+  }
+  
+  //周期5毫秒
+  if(arr[3] == 0)
+  {
+    arr[3] = 1;
+    if(cout[3] == 0 && N[1] * MAX < total && N[8] == 1)
+    {
+      cout[3] = cout[13];
+    }
+    cout[13]++;
+    cout[3]++;
+    High_message4.id = 0x4;
+    if(cout[3] > MAX && N[8] == 1)
+    {
+      High_message4.id = High_message4.id | 0x80;
+      cout[3] = 0;
+      cout[13] = 0;
+    }
+    if(High_message4.id == 0x4)
+    {
+      output(High_message4); 
+    }
+  }
+  
+  if(arr[4] == 0)
+  {
+    arr[4] = 1;
+    if(cout[4] == 0 && N[2] * MAX < total && N[8] == 1)
+    {
+      cout[4] = cout[14];
+    }
+    cout[14]++;
+    cout[4]++;
+    High_message5.id = 0x5;
+    if(cout[4] > MAX && N[8] == 1)
+    {
+      High_message5.id = High_message5.id | 0x80;
+      cout[4] = 0;
+      cout[14] = 0;
+    }
+    if(High_message5.id == 0x5)
+    {
+      output(High_message5);
+    }   
+  }
+  
+  if(arr[5] == 0)
+  {
+     arr[5] = 1;
+    if(cout[5] == 0 && N[2] * MAX < total && N[8] == 1)
+    {
+      cout[5] = cout[15];
+    }
+    cout[15]++;
+    cout[5]++;
+    High_message6.id = 0x6;
+    if(cout[5] > MAX && N[8] == 1)
+    {
+      High_message6.id = High_message6.id | 0x80;
+      cout[5] = 0;
+      cout[15] = 0;
+    }
+    if(High_message6.id == 0x6)
+    {
+      output(High_message6);
+    }
+  }
+  
+  if(arr[6] == 0)
+  {
+    arr[6] = 1;
+    if(cout[6] == 0 && N[3] * MAX < total && N[8] == 1)
+    {
+      cout[6] = cout[16];
+    }
+    cout[16]++;
+    cout[6]++;
+    High_message7.id = 0x7;
+    if(cout[6] > MAX && N[8] == 1)
+    {
+      High_message7.id = High_message7.id | 0x80;
+      cout[6] = 0;
+      cout[16] = 0;
+    }
+    if(High_message7.id == 0x7)
+    {
+      output(High_message7);
+    }
+  }
+  //周期为10ms
+  if(arr[7] == 0)
+  {
+    arr[7] = 1;
+    if(cout[7] == 0 && N[3] * MAX < total && N[8] == 1)
+    {
+      cout[7] = cout[17];
+    }
+    cout[17]++;
+    cout[7]++;
+    
+    High_message8.id = 0x8;
+    if(cout[7] > MAX && N[8] == 1)
+    {
+      High_message8.id = High_message8.id | 0x80;
+      cout[7] = 0;
+      cout[17] = 0;
+    }
+    if(High_message8.id == 0x8)
+    {
+      output(High_message8);
+    }
+  }
+  
+  if(arr[8] == 0)
+  {
+    arr[8] = 1; 
+    if(cout[8] == 0 && N[4] * MAX < total && N[8] == 1)
+    {
+      cout[8] = cout[18];
+    }
+    cout[18]++;
+    cout[8]++;
+    High_message9.id = 0x9;
+    if(cout[8] > MAX && N[8] == 1)
+    {
+      High_message9.id = High_message9.id | 0x80;
+      cout[8] = 0;
+      cout[18] = 0;
+    }
+    if(High_message9.id == 0x9)
+    {
+      output(High_message9);
+    }
+  }
+
+  if(arr[9] == 0)
+  {
+    arr[9] = 1;
+    if(cout[9] == 0 && N[4] * MAX < total && N[8] == 1)
+    {
+      cout[9] = cout[19];
+    }
+    cout[19]++;
+    cout[9]++;
+    High_message10.id = 0x10;
+    if(cout[9] > MAX && N[8] == 1)
+    {
+      High_message10.id = High_message10.id | 0x80;
+      cout[9] = 0;
+      cout[19] = 0;
+    }
+    if(High_message10.id == 0x10)
+    {
+      output(High_message10);
+    }
+  }
+}
+
+/*
+函数功能：1.满足条件后实现由高到低以后的发送，只发送低优先级的情况，同时如果发送成功将发送条件破坏，使其只能在下一次周期循环再发
+          2.如果不能发的话，若是处于低的期间则会将上次c4累加的数值减1
+*/
+inversion_output()
+{
+  if(a[0] == MAX+1 && c5 < 4 && High_message1.id != 0x1)
+  {
+    output(High_message1); 
+    c5++;
+    a[0]++;
+  }
+  else if(a[0] == MAX+1)
+    c4--;
+  
+  if(a[1] == MAX+1 && c5 < 4 && High_message2.id != 0x2)
+  {
+    output(High_message2); 
+    c5++;
+    a[1]++;
+  }
+  else if(a[1] == MAX+1)
+    c4--;
+  
+  if(a[2] == MAX+1 && c5 < 4 && High_message3.id != 0x3)
+  {
+    output(High_message3); 
+    c5++;
+    a[2]++;
+  }
+  else if(a[2] == MAX+1)
+    c4--;
+  
+  if(a[3] == MAX+1 && c5 < 4 && High_message4.id != 0x4)
+  {
+    output(High_message4); 
+    c5++;
+    a[3]++;
+  }
+  else if(a[3] == MAX+1)
+    c4--;
+  
+  if(a[4] == MAX+1 && c5 < 4 && High_message5.id != 0x5)
+  {
+    output(High_message5); 
+    c5++;
+    a[4]++;
+  }
+  else if(a[4] == MAX+1)
+    c4--;
+  
+  if(a[5] == MAX+1 && c5 < 4 && High_message6.id != 0x6)
+  {
+    output(High_message6); 
+    c5++;
+    a[5]++;
+  }
+  else if(a[5] == MAX+1)
+    c4--;
+  
+  if(a[6] == MAX+1 && c5 < 4 && High_message7.id != 0x7)
+  {
+    output(High_message7); 
+    c5++;
+    a[6]++;
+  }
+  else if(a[6] == MAX+1)
+    c4--;
+  
+  if(a[7] == MAX+1 && c5 < 4 && High_message8.id != 0x8)
+  {
+    output(High_message8); 
+    c5++;
+    a[7]++;
+  }
+  else if(a[7] == MAX+1)
+    c4--;
+  
+  if(a[8] == MAX+1 && c5 < 4 && High_message9.id != 0x9)
+  {
+    output(High_message9); 
+    c5++;
+    a[8]++;
+  }
+  else if(a[8] == MAX+1)
+    c4--;
+  
+  if(a[9] == MAX+1 && c5 < 4 && High_message2.id != 0x10)
+  {
+    output(High_message10); 
+    c5++;
+    a[9]++;
+  }
+  else if(a[9] == MAX+1)
+    c4--;
+}
+
+/*
+函数功能：1.每执行一次自动减4，因为1ms在这种情况下最多发送4个，若c4小于0，则将其清零，
+          2.清零c3和a[10]，防止造成干扰
+*/
+clear_mark()
+{
+  c4 = c4 - 4;
+  if(c4 < 0)
+  {
+    c4 = 0;
+  }
+  c3=0;
+  a[10] = 0;
+}
+  
+
+
+
+
+
+
+
