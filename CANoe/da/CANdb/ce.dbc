@@ -1,0 +1,60 @@
+VERSION ""
+
+
+NS_ : 
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_DEF_REL_
+	BA_REL_
+	BA_DEF_DEF_REL_
+	BU_SG_REL_
+	BU_EV_REL_
+	BU_BO_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: Light Engine Display
+VAL_TABLE_ vt_OnOff 1 "On" 0 "Off" ;
+
+
+BO_ 1026 Rev_message2: 2 Vector__XXX
+ SG_ HeadLight : 8|1@1- (1,0) [0|1] "" Vector__XXX
+ SG_ FlashLight : 0|1@1- (1,0) [0|1] "" Vector__XXX
+
+BO_ 1025 Rev_message1: 3 Vector__XXX
+ SG_ OnOff : 16|1@1- (1,0) [0|0] "" Vector__XXX
+ SG_ EngineSpeed : 0|15@1- (1,0) [0|3500] "rpm" Vector__XXX
+
+BO_ 2 LightState: 2 Light
+ SG_ HeadLight : 8|1@1- (1,0) [0|1] ""  Display
+ SG_ FlashLight : 0|1@1- (1,0) [0|1] ""  Display
+
+BO_ 1 EngineState: 3 Engine
+ SG_ OnOff : 16|1@1- (1,0) [0|0] "" Vector__XXX
+ SG_ EngineSpeed : 0|15@1- (1,0) [0|3500] "rpm"  Display
+
+
+
+BA_DEF_  "BusType" STRING ;
+BA_DEF_DEF_  "BusType" "CAN";
+

@@ -1,0 +1,104 @@
+/*@!Encoding:936*/
+includes
+{
+  #include "bl.can"
+}
+
+variables 
+{
+  
+
+}
+
+
+
+
+
+
+
+
+
+
+
+on message 0x1, 0x401
+{
+  k = 9;
+  //开始加密
+  L[9] = Low_message11.dword(0);
+  R[9] = Low_message11.dword(4);
+  blowfish(); 
+
+  if(High_message1.dword(0) == L[9] && High_message1.dword(4) == R[9])
+  {
+    
+    k = 0;
+    Blowfish_Decrypt(); 
+    //write("33333333    %08lx %08lx", L[0], R[0]);
+    High_message1.dword(0) = L[0];
+    High_message1.dword(4) = R[0];
+    if(@Engine::EngineStateSwitch)
+    {
+       @Engine::kkk = High_message1.byte(2);//启动汽车图标
+    }
+    else
+    @Engine::kkk = High_message1.byte(2);
+  
+    @Engine::EngineSpeedDspMeter = High_message1.word(0) / 1000.0;
+    @Engine::jjj = High_message1.word(0);//速度值/表盘下方
+  }
+  
+}
+
+
+
+
+
+
+
+on message 0x2, 0x402 
+{
+  //由k来选择不同的解密、加密时 的赋值，最好每次使用的时候都有声明
+  k = 8;
+  L[8] = Low_message12.dword(0);
+  R[8] = Low_message12.dword(4);
+  blowfish();  
+  
+  if(cj == 1)//这个参数是为了防止执行两次，把这个报文放在这里就是会执行两次，所以需要限制一下，除非放到高的能够.can
+  if(High_message2.dword(0) == L[8] && High_message2.dword(4) == R[8])
+  {
+    k = 1;
+    cj = 0;
+    Blowfish_Decrypt();
+    High_message2.dword(0) = L[1];
+    High_message2.dword(4) = R[1];
+    gDebugCounter++;
+
+    if(High_message2.byte(1) == kON) 
+    {
+      if(High_message2.byte(0) == kON) 
+      {
+        @sysvar::Lights::LightDisplay = 7;
+       
+      } 
+      else if(High_message2.byte(0) == kOFF) 
+      {
+        @sysvar::Lights::LightDisplay = 4;
+      }
+    }
+    else if(High_message2.byte(1) == kOFF) 
+    {
+      if(High_message2.byte(0) == kON)  
+      {
+        @sysvar::Lights::LightDisplay = 3;
+      } 
+      else if(High_message2.byte(0) == kOFF) 
+      {
+        @sysvar::Lights::LightDisplay = 0; 
+      }
+    }
+      if(gDebugCounter == 10)
+      {
+        gDebugCounter = 0;
+      }   
+  }
+}

@@ -1,0 +1,17 @@
+/*@!Encoding:936*/
+includes
+{
+  
+}
+
+variables
+{
+  message 0x01 xnn1 = {dlc = 8};
+}
+
+on message New_Message_2
+{
+   this.id= xnn1.ID;
+  write("%D", New_Message_2.id);
+  
+}
