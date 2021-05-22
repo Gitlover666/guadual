@@ -1,0 +1,2 @@
+netstat -aon|findstr 5037
+taskkill /pid 8396 /f

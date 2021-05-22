@@ -1,0 +1,14 @@
+..\obj\usart3.o: ..\HARDWARE\USART3\usart3.c
+..\obj\usart3.o: ..\HARDWARE\USART3\usart3.h
+..\obj\usart3.o: ..\SYSTEM\sys\sys.h
+..\obj\usart3.o: ..\SYSTEM\sys\stm32f10x.h
+..\obj\usart3.o: ..\SYSTEM\sys\core_cm3.h
+..\obj\usart3.o: H:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
+..\obj\usart3.o: ..\SYSTEM\sys\system_stm32f10x.h
+..\obj\usart3.o: ..\Gizwits\gizwits_product.h
+..\obj\usart3.o: ..\Gizwits\gizwits_protocol.h
+..\obj\usart3.o: H:\keil5\ARM\ARMCC\Bin\..\include\stdbool.h
+..\obj\usart3.o: H:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
+..\obj\usart3.o: H:\keil5\ARM\ARMCC\Bin\..\include\stdlib.h
+..\obj\usart3.o: H:\keil5\ARM\ARMCC\Bin\..\include\string.h
+..\obj\usart3.o: ..\Gizwits\gizwits_product.h

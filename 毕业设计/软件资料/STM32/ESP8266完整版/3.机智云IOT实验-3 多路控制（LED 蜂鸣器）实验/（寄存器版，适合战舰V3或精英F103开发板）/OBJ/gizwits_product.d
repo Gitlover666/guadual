@@ -1,0 +1,16 @@
+..\obj\gizwits_product.o: ..\Gizwits\gizwits_product.c
+..\obj\gizwits_product.o: H:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
+..\obj\gizwits_product.o: H:\keil5\ARM\ARMCC\Bin\..\include\string.h
+..\obj\gizwits_product.o: ..\Gizwits\gizwits_protocol.h
+..\obj\gizwits_product.o: H:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
+..\obj\gizwits_product.o: H:\keil5\ARM\ARMCC\Bin\..\include\stdbool.h
+..\obj\gizwits_product.o: H:\keil5\ARM\ARMCC\Bin\..\include\stdlib.h
+..\obj\gizwits_product.o: ..\Gizwits\gizwits_product.h
+..\obj\gizwits_product.o: ..\Gizwits\gizwits_protocol.h
+..\obj\gizwits_product.o: ..\HARDWARE\LED\led.h
+..\obj\gizwits_product.o: ..\SYSTEM\sys\sys.h
+..\obj\gizwits_product.o: ..\SYSTEM\sys\stm32f10x.h
+..\obj\gizwits_product.o: ..\SYSTEM\sys\core_cm3.h
+..\obj\gizwits_product.o: ..\SYSTEM\sys\system_stm32f10x.h
+..\obj\gizwits_product.o: ..\HARDWARE\USART3\usart3.h
+..\obj\gizwits_product.o: ..\HARDWARE\BEEP\beep.h

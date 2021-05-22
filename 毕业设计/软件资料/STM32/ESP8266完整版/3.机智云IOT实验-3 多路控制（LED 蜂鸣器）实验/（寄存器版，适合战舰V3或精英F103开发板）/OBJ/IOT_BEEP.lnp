@@ -1,0 +1,17 @@
+--cpu Cortex-M3
+"..\obj\startup_stm32f10x_hd.o"
+"..\obj\main.o"
+"..\obj\delay.o"
+"..\obj\sys.o"
+"..\obj\usart.o"
+"..\obj\led.o"
+"..\obj\timer.o"
+"..\obj\usart3.o"
+"..\obj\key.o"
+"..\obj\beep.o"
+"..\obj\gizwits_product.o"
+"..\obj\gizwits_protocol.o"
+--strict --scatter "..\OBJ\IOT_BEEP.sct"
+--summary_stderr --info summarysizes --map --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "..\OBJ\IOT_BEEP.map" -o ..\OBJ\IOT_BEEP.axf

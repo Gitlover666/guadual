@@ -1,0 +1,14 @@
+..\obj\timer.o: ..\HARDWARE\TIMER\timer.c
+..\obj\timer.o: ..\HARDWARE\TIMER\timer.h
+..\obj\timer.o: ..\SYSTEM\sys\sys.h
+..\obj\timer.o: ..\SYSTEM\sys\stm32f10x.h
+..\obj\timer.o: ..\SYSTEM\sys\core_cm3.h
+..\obj\timer.o: H:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
+..\obj\timer.o: ..\SYSTEM\sys\system_stm32f10x.h
+..\obj\timer.o: ..\Gizwits\gizwits_product.h
+..\obj\timer.o: ..\Gizwits\gizwits_protocol.h
+..\obj\timer.o: H:\keil5\ARM\ARMCC\Bin\..\include\stdbool.h
+..\obj\timer.o: H:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
+..\obj\timer.o: H:\keil5\ARM\ARMCC\Bin\..\include\stdlib.h
+..\obj\timer.o: H:\keil5\ARM\ARMCC\Bin\..\include\string.h
+..\obj\timer.o: ..\Gizwits\gizwits_product.h

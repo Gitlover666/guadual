@@ -1,0 +1,456 @@
+#include "stm32f10x.h"
+#include "key.h"
+#include "sys.h" 
+#include "delay.h"
+//////////////////////////////////////////////////////////////////////////////////	 
+//本程序只供学习使用，未经作者许可，不得用于其它任何用途
+//ALIENTEK战舰STM32开发板
+//按键驱动代码	   
+//正点原子@ALIENTEK
+//技术论坛:www.openedv.com
+//修改日期:2012/9/3
+//版本：V1.0
+//版权所有，盗版必究。
+//Copyright(C) 广州市星翼电子科技有限公司 2009-2019
+//All rights reserved									  
+//////////////////////////////////////////////////////////////////////////////////  
+								    
+//按键初始化函数
+void KEY_Init(void) //IO初始化
+{ 
+ 	GPIO_InitTypeDef GPIO_InitStructure;
+ 
+ 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA|RCC_APB2Periph_GPIOE,ENABLE);//使能PORTA,PORTE时钟
+
+	GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_2|GPIO_Pin_3|GPIO_Pin_4;//KEY0-KEY2
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU; //设置成上拉输入
+ 	GPIO_Init(GPIOE, &GPIO_InitStructure);//初始化GPIOE2,3,4
+
+	//初始化 WK_UP-->GPIOA.0	  下拉输入
+	GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_0;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD; //PA0设置成输入，默认下拉	  
+	GPIO_Init(GPIOA, &GPIO_InitStructure);//初始化GPIOA.0
+
+}
+//按键处理函数
+//返回按键值
+//mode:0,不支持连续按;1,支持连续按;
+//0，没有任何按键按下
+//1，KEY0按下
+//2，KEY1按下
+//3，KEY2按下 
+//4，KEY3按下 WK_UP
+//注意此函数有响应优先级,KEY0>KEY1>KEY2>KEY3!!
+u8 KEY_Scan(u8 mode)
+{	 
+	static u8 key_up=1;//按键按松开标志
+	if(mode)key_up=1;  //支持连按		  
+	if(key_up&&(KEY0==0||KEY1==0||KEY2==0||WK_UP==1))
+	{
+		delay_ms(10);//去抖动 
+		key_up=0;
+		if(KEY0==0)return KEY0_PRES;
+		else if(KEY1==0)return KEY1_PRES;
+		else if(KEY2==0)return KEY2_PRES;
+		else if(WK_UP==1)return WKUP_PRES;
+	}else if(KEY0==1&&KEY1==1&&KEY2==1&&WK_UP==0)key_up=1; 	    
+ 	return 0;// 无按键按下
+}
+
+
+
+
+
+
+
+/*@!Encoding:936*/
+//这些操作是满足CAN总线的规则的
+
+includes
+{
+ 
+}
+/*
+arr是触发标志位
+cout是计数标志位
+per是周期标志位
+*/
+variables
+{
+  int cout[20];
+  int arr[20];
+  int per[6];
+  //在这里改变次数
+  int N = 3;
+  //定义高重要程度的报文
+  message 0x1 High_message1 = {dlc=8};
+  message 0x2 High_message2 = {dlc=8};
+  message 0x3 High_message3 = {dlc=8};
+  message 0x4 High_message4 = {dlc=8};
+  message 0x5 High_message5 = {dlc=8};
+  message 0x6 High_message6 = {dlc=8};
+  message 0x7 High_message7 = {dlc=8};
+  message 0x8 High_message8 = {dlc=8};
+  message 0x9 High_message9 = {dlc=8};
+  message 0x10 High_message10 = {dlc=8};
+  
+  //定义低重要程度的报文
+  message 0x41 Low_message1 = {dlc=8};
+  message 0x42 Low_message2 = {dlc=8};
+  message 0x43 Low_message3 = {dlc=8};
+  message 0x44 Low_message4 = {dlc=8};
+  message 0x45 Low_message5 = {dlc=8};
+  message 0x46 Low_message6 = {dlc=8};
+  message 0x47 Low_message7 = {dlc=8};
+  message 0x48 Low_message8 = {dlc=8};
+  message 0x49 Low_message9 = {dlc=8};
+  message 0x50 Low_message10 = {dlc=8};
+  
+  
+  mstimer mscycle, cycle1, cycle2, cycle3, cycle4;
+} 
+
+on start
+{ 
+  write("%d", cout[2]);
+  write("%d", cout[15]);
+  setTimer(mscycle,1);
+}
+
+on timer mscycle
+{
+  int c1;
+  //总体上判断是否有报文连续3毫秒内持续发送，不管有没有3毫秒内将各个报文的计数标志位清零
+  if(per[2]>4)
+  {
+    for(c1=0; c1<4; c1++)
+    {
+      cout[c1] = 0;
+    }
+  }
+  
+  //设置周期1毫秒，清零触发标志位
+  if(per[0]==1)
+  {
+    per[0]=0;
+    arr[0]=0;
+  }
+
+  if(arr[0]==0)
+  {
+    arr[0]=1;
+    cout[0]++;
+    //判断是否大于三次
+    if(cout[0]>3)
+    {
+      High_message1.id = High_message1.id | 0x80;
+      setTimer(cycle1,1);
+    }
+    output(High_message1);
+  }  
+  
+  //周期2毫秒
+  if(per[1]==2)
+  {
+    per[1]=0;
+    arr[1]=0;
+    arr[2]=0;
+  }
+  if(arr[1]==0)
+  {
+    arr[1]=1;
+    cout[1]++;
+    if(cout[1]>3)
+    {
+      High_message2.id = High_message2.id | 0x80;
+      setTimer(cycle2,1);
+    }
+    output(High_message2);
+  }
+  
+  if(arr[2]==0)
+  {
+    arr[2]=1;
+    cout[2]++;
+    if(cout[2]>3)
+    {
+      High_message3.id = High_message3.id | 0x80;
+      setTimer(cycle3,1);
+    }
+    output(High_message3);
+    
+  }
+  
+  //周期5毫秒
+  if(per[2]==5)
+  {
+    per[2]=0;
+    arr[3]=0;
+    arr[4]=0;
+    arr[5]=0;
+    arr[6]=0;    
+  }
+  
+  if(arr[3]==0)
+  {
+    arr[3]=1;
+    cout[3]++;
+    if(cout[3]>3)
+    {
+      High_message4.id = High_message4.id | 0x80;
+      setTimer(cycle4,1);
+    }
+    output(High_message4);
+  }
+  
+  if(arr[4]==0)
+  {
+    output(High_message5);
+    arr[4]=1;
+  }
+  
+  if(arr[5]==0)
+  {
+    output(High_message6);
+    arr[5]=1;
+  }
+  if(arr[6]==0)
+  {
+    output(High_message7);
+    arr[6]=1;
+  }
+  //周期为10ms
+  if(per[3]==10)
+  {
+    per[3]=0;
+    arr[7]=0;
+    arr[8]=0;
+    arr[9]=0;
+    arr[10]=0;    
+  }
+  
+  if(arr[7]==0)
+  {
+    arr[7]=1;
+    output(High_message8);
+  }
+  
+  if(arr[8]==0)
+  {
+    output(High_message9);
+    arr[8]=1;
+  }
+  
+  if(arr[9]==0)
+  {
+    output(High_message10);
+    arr[9]=1;
+  }
+  if(arr[10]==0)
+  {
+    output(Low_message1);
+    arr[10]=1;
+  }
+  //周期为15ms
+  if(per[3]==10)
+  {
+    per[3]=0;
+    arr[7]=0;
+    arr[8]=0;
+    arr[9]=0;
+    arr[10]=0;    
+  }
+  
+  if(arr[7]==0)
+  {
+    arr[7]=1;
+    output(High_message8);
+  }
+  
+  if(arr[8]==0)
+  {
+    output(High_message9);
+    arr[8]=1;
+  }
+  
+  if(arr[9]==0)
+  {
+    output(High_message10);
+    arr[9]=1;
+  }
+  if(arr[10]==0)
+  {
+    output(Low_message1);
+    arr[10]=1;
+  }
+    
+  per[0]++;
+  per[1]++;
+  per[2]++;
+  per[3]++;
+  per[4]++;
+  per[5]++;
+  setTimer(mscycle,1);
+}
+
+
+//定时器函数，1ms执行一次,2
+
+
+on timer cycle1
+{
+  High_message1.id = 0x1;
+  output(High_message1);
+}
+
+on timer cycle2
+{
+  High_message2.id = 0x2;
+  output(High_message2);
+}
+
+on timer cycle3
+{
+  High_message3.id = 0x3;
+  output(High_message3);
+}
+
+on timer cycle4
+{
+  High_message4.id = 0x4;
+  output(High_message4);
+}
+
+/*
+on timer cycle1ms
+{
+  cout[0]++;
+  
+  //判断是否大于三次
+  if(cout[0]>3)
+  {
+    High_message1.id = High_message1.id | 0x80;
+    cout[0] = 0;
+    setTimer(cycle,1);
+  }
+  
+  if(cout[1]>3)
+  {
+    High_message2.id = High_message2.id | 0x80;
+    cout[1] = 0;
+    setTimer(cycle,1);
+  }
+  
+  else
+  {
+    setTimer(cycle1ms,1);
+  } 
+}
+
+//定时器函数，2ms执行一次,2
+on timer cycle2ms
+{
+  cout[0]++;
+  i++;
+  //判断是否大于三次
+  if(cout[0]>3)
+  {
+    High_message1.id = High_message1.id | 0x80;
+    cout[0] = 0;
+    setTimer(cycle,1);
+  }
+  else
+  {
+    output(High_message1);
+    setTimer(cycle2ms,1);
+  } 
+}
+
+//定时器函数，5ms执行一次,4
+on timer cycle5ms
+{
+  cout[0]++;
+  i++;
+  //判断是否大于三次
+  if(cout[0]>3)
+  {
+    High_message1.id = High_message1.id | 0x80;
+    cout[0] = 0;
+    setTimer(cycle,1);
+  }
+  else
+  {
+    output(High_message1);
+    setTimer(cycle5ms,1);
+  } 
+}
+
+//定时器函数，10ms执行一次,4
+on timer cycle10ms
+{
+  cout[0]++;
+  i++;
+  //判断是否大于三次
+  if(cout[0]>3)
+  {
+    High_message1.id = High_message1.id | 0x80;
+    cout[0] = 0;
+    setTimer(cycle,1);
+  }
+  else
+  {
+    output(High_message1);
+    setTimer(cycle10ms,1);
+  } 
+}
+
+//定时器函数，15ms执行一次,4
+on timer cycle15ms
+{
+  cout[0]++;
+  i++;
+  //判断是否大于三次
+  if(cout[0]>3)
+  {
+    High_message1.id = High_message1.id | 0x80;
+    cout[0] = 0;
+    setTimer(cycle,1);
+  }
+  else
+  {
+    output(High_message1);
+    setTimer(cycle15ms,1);
+  } 
+}
+
+//定时器函数，20ms执行一次,4
+on timer cycle20ms
+{
+  cout[0]++;
+  i++;
+  //判断是否大于三次
+  if(cout[0]>3)
+  {
+    High_message1.id = High_message1.id | 0x80;
+    cout[0] = 0;
+    setTimer(cycle,1);
+  }
+  else
+  {
+    output(High_message1);
+    setTimer(cycle20ms,1);
+  } 
+}
+
+//设置定时周期
+on timer cycle
+{
+  High_message1.id = 0x1;
+  output(High_message1);
+  setTimer(cycle1ms,2);
+  
+}*/
+
+
+
+

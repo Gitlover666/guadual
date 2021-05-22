@@ -1,0 +1,113 @@
+Dependencies for Project 'IOT_BEEP', Target 'IOT_BEEP': (DO NOT MODIFY !)
+F (.\startup_stm32f10x_hd.s)(0x595C67E5)(--cpu Cortex-M3 -g --apcs=interwork -I"F:\毕设\毕业设计\软件资料\ESP8266完整版\3.机智云IOT实验-3 多路控制（LED 蜂鸣器）实验\（寄存器版，适合战舰V3或精英F103开发板）\USER\RTE"-IH:\keil5\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include-IH:\keil5\ARM\CMSIS\Include--pd "__UVISION_VERSION SETA 521" --pd "STM32F10X_HD SETA 1"--list ..\obj\startup_stm32f10x_hd.lst --xref -o ..\obj\startup_stm32f10x_hd.o --depend ..\obj\startup_stm32f10x_hd.d)
+F (.\main.c)(0x5E1409CF)(--c99 -c --cpu Cortex-M3 -g -O0 --apcs=interwork -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\HARDWARE\LED -I ..\HARDWARE\KEY -I ..\HARDWARE\USART3 -I ..\HARDWARE\TIMER -I ..\HARDWARE\BEEP -I ..\Gizwits-I"F:\毕设\毕业设计\软件资料\ESP8266完整版\3.机智云IOT实验-3 多路控制（LED 蜂鸣器）实验\（寄存器版，适合战舰V3或精英F103开发板）\USER\RTE"-IH:\keil5\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include-IH:\keil5\ARM\CMSIS\Include-D__UVISION_VERSION="521" -DSTM32F10X_HD -DSTM32F10X_HD-o ..\obj\main.o --omf_browse ..\obj\main.crf --depend ..\obj\main.d)
+I (..\SYSTEM\sys\sys.h)(0x582E7B55)
+I (..\SYSTEM\sys\stm32f10x.h)(0x582E7B55)
+I (..\SYSTEM\sys\core_cm3.h)(0x582E7B55)
+I (H:\keil5\ARM\ARMCC\include\stdint.h)(0x574E3E26)
+I (..\SYSTEM\sys\system_stm32f10x.h)(0x582E7B55)
+I (..\SYSTEM\delay\delay.h)(0x582E7B54)
+I (..\SYSTEM\usart\usart.h)(0x582E7B55)
+I (H:\keil5\ARM\ARMCC\include\stdio.h)(0x574E3E26)
+I (..\HARDWARE\LED\led.h)(0x582E7B54)
+I (..\HARDWARE\KEY\key.h)(0x582E7B54)
+I (..\HARDWARE\TIMER\timer.h)(0x582E7B54)
+I (..\HARDWARE\USART3\usart3.h)(0x5E140447)
+I (..\HARDWARE\BEEP\beep.h)(0x582E7AEA)
+I (..\Gizwits\gizwits_product.h)(0x593E017E)
+I (..\Gizwits\gizwits_protocol.h)(0x5E1408D3)
+I (H:\keil5\ARM\ARMCC\include\stdbool.h)(0x574E3E26)
+I (H:\keil5\ARM\ARMCC\include\stdlib.h)(0x574E3E26)
+I (H:\keil5\ARM\ARMCC\include\string.h)(0x574E3E26)
+F (..\SYSTEM\delay\delay.c)(0x582E7B54)(--c99 -c --cpu Cortex-M3 -g -O0 --apcs=interwork -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\HARDWARE\LED -I ..\HARDWARE\KEY -I ..\HARDWARE\USART3 -I ..\HARDWARE\TIMER -I ..\HARDWARE\BEEP -I ..\Gizwits-I"F:\毕设\毕业设计\软件资料\ESP8266完整版\3.机智云IOT实验-3 多路控制（LED 蜂鸣器）实验\（寄存器版，适合战舰V3或精英F103开发板）\USER\RTE"-IH:\keil5\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include-IH:\keil5\ARM\CMSIS\Include-D__UVISION_VERSION="521" -DSTM32F10X_HD -DSTM32F10X_HD-o ..\obj\delay.o --omf_browse ..\obj\delay.crf --depend ..\obj\delay.d)
+I (..\SYSTEM\delay\delay.h)(0x582E7B54)
+I (..\SYSTEM\sys\sys.h)(0x582E7B55)
+I (..\SYSTEM\sys\stm32f10x.h)(0x582E7B55)
+I (..\SYSTEM\sys\core_cm3.h)(0x582E7B55)
+I (H:\keil5\ARM\ARMCC\include\stdint.h)(0x574E3E26)
+I (..\SYSTEM\sys\system_stm32f10x.h)(0x582E7B55)
+F (..\SYSTEM\sys\sys.c)(0x595B8CD8)(--c99 -c --cpu Cortex-M3 -g -O0 --apcs=interwork -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\HARDWARE\LED -I ..\HARDWARE\KEY -I ..\HARDWARE\USART3 -I ..\HARDWARE\TIMER -I ..\HARDWARE\BEEP -I ..\Gizwits-I"F:\毕设\毕业设计\软件资料\ESP8266完整版\3.机智云IOT实验-3 多路控制（LED 蜂鸣器）实验\（寄存器版，适合战舰V3或精英F103开发板）\USER\RTE"-IH:\keil5\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include-IH:\keil5\ARM\CMSIS\Include-D__UVISION_VERSION="521" -DSTM32F10X_HD -DSTM32F10X_HD-o ..\obj\sys.o --omf_browse ..\obj\sys.crf --depend ..\obj\sys.d)
+I (..\SYSTEM\sys\sys.h)(0x582E7B55)
+I (..\SYSTEM\sys\stm32f10x.h)(0x582E7B55)
+I (..\SYSTEM\sys\core_cm3.h)(0x582E7B55)
+I (H:\keil5\ARM\ARMCC\include\stdint.h)(0x574E3E26)
+I (..\SYSTEM\sys\system_stm32f10x.h)(0x582E7B55)
+F (..\SYSTEM\usart\usart.c)(0x595B900F)(--c99 -c --cpu Cortex-M3 -g -O0 --apcs=interwork -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\HARDWARE\LED -I ..\HARDWARE\KEY -I ..\HARDWARE\USART3 -I ..\HARDWARE\TIMER -I ..\HARDWARE\BEEP -I ..\Gizwits-I"F:\毕设\毕业设计\软件资料\ESP8266完整版\3.机智云IOT实验-3 多路控制（LED 蜂鸣器）实验\（寄存器版，适合战舰V3或精英F103开发板）\USER\RTE"-IH:\keil5\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include-IH:\keil5\ARM\CMSIS\Include-D__UVISION_VERSION="521" -DSTM32F10X_HD -DSTM32F10X_HD-o ..\obj\usart.o --omf_browse ..\obj\usart.crf --depend ..\obj\usart.d)
+I (..\SYSTEM\usart\usart.h)(0x582E7B55)
+I (..\SYSTEM\sys\sys.h)(0x582E7B55)
+I (..\SYSTEM\sys\stm32f10x.h)(0x582E7B55)
+I (..\SYSTEM\sys\core_cm3.h)(0x582E7B55)
+I (H:\keil5\ARM\ARMCC\include\stdint.h)(0x574E3E26)
+I (..\SYSTEM\sys\system_stm32f10x.h)(0x582E7B55)
+I (H:\keil5\ARM\ARMCC\include\stdio.h)(0x574E3E26)
+F (..\HARDWARE\LED\led.c)(0x582E7B54)(--c99 -c --cpu Cortex-M3 -g -O0 --apcs=interwork -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\HARDWARE\LED -I ..\HARDWARE\KEY -I ..\HARDWARE\USART3 -I ..\HARDWARE\TIMER -I ..\HARDWARE\BEEP -I ..\Gizwits-I"F:\毕设\毕业设计\软件资料\ESP8266完整版\3.机智云IOT实验-3 多路控制（LED 蜂鸣器）实验\（寄存器版，适合战舰V3或精英F103开发板）\USER\RTE"-IH:\keil5\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include-IH:\keil5\ARM\CMSIS\Include-D__UVISION_VERSION="521" -DSTM32F10X_HD -DSTM32F10X_HD-o ..\obj\led.o --omf_browse ..\obj\led.crf --depend ..\obj\led.d)
+I (..\HARDWARE\LED\led.h)(0x582E7B54)
+I (..\SYSTEM\sys\sys.h)(0x582E7B55)
+I (..\SYSTEM\sys\stm32f10x.h)(0x582E7B55)
+I (..\SYSTEM\sys\core_cm3.h)(0x582E7B55)
+I (H:\keil5\ARM\ARMCC\include\stdint.h)(0x574E3E26)
+I (..\SYSTEM\sys\system_stm32f10x.h)(0x582E7B55)
+F (..\HARDWARE\TIMER\timer.c)(0x595B9112)(--c99 -c --cpu Cortex-M3 -g -O0 --apcs=interwork -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\HARDWARE\LED -I ..\HARDWARE\KEY -I ..\HARDWARE\USART3 -I ..\HARDWARE\TIMER -I ..\HARDWARE\BEEP -I ..\Gizwits-I"F:\毕设\毕业设计\软件资料\ESP8266完整版\3.机智云IOT实验-3 多路控制（LED 蜂鸣器）实验\（寄存器版，适合战舰V3或精英F103开发板）\USER\RTE"-IH:\keil5\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include-IH:\keil5\ARM\CMSIS\Include-D__UVISION_VERSION="521" -DSTM32F10X_HD -DSTM32F10X_HD-o ..\obj\timer.o --omf_browse ..\obj\timer.crf --depend ..\obj\timer.d)
+I (..\HARDWARE\TIMER\timer.h)(0x582E7B54)
+I (..\SYSTEM\sys\sys.h)(0x582E7B55)
+I (..\SYSTEM\sys\stm32f10x.h)(0x582E7B55)
+I (..\SYSTEM\sys\core_cm3.h)(0x582E7B55)
+I (H:\keil5\ARM\ARMCC\include\stdint.h)(0x574E3E26)
+I (..\SYSTEM\sys\system_stm32f10x.h)(0x582E7B55)
+I (..\Gizwits\gizwits_product.h)(0x593E017E)
+I (..\Gizwits\gizwits_protocol.h)(0x5E1408D3)
+I (H:\keil5\ARM\ARMCC\include\stdbool.h)(0x574E3E26)
+I (H:\keil5\ARM\ARMCC\include\stdio.h)(0x574E3E26)
+I (H:\keil5\ARM\ARMCC\include\stdlib.h)(0x574E3E26)
+I (H:\keil5\ARM\ARMCC\include\string.h)(0x574E3E26)
+F (..\HARDWARE\USART3\usart3.c)(0x5962353D)(--c99 -c --cpu Cortex-M3 -g -O0 --apcs=interwork -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\HARDWARE\LED -I ..\HARDWARE\KEY -I ..\HARDWARE\USART3 -I ..\HARDWARE\TIMER -I ..\HARDWARE\BEEP -I ..\Gizwits-I"F:\毕设\毕业设计\软件资料\ESP8266完整版\3.机智云IOT实验-3 多路控制（LED 蜂鸣器）实验\（寄存器版，适合战舰V3或精英F103开发板）\USER\RTE"-IH:\keil5\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include-IH:\keil5\ARM\CMSIS\Include-D__UVISION_VERSION="521" -DSTM32F10X_HD -DSTM32F10X_HD-o ..\obj\usart3.o --omf_browse ..\obj\usart3.crf --depend ..\obj\usart3.d)
+I (..\HARDWARE\USART3\usart3.h)(0x5E140447)
+I (..\SYSTEM\sys\sys.h)(0x582E7B55)
+I (..\SYSTEM\sys\stm32f10x.h)(0x582E7B55)
+I (..\SYSTEM\sys\core_cm3.h)(0x582E7B55)
+I (H:\keil5\ARM\ARMCC\include\stdint.h)(0x574E3E26)
+I (..\SYSTEM\sys\system_stm32f10x.h)(0x582E7B55)
+I (..\Gizwits\gizwits_product.h)(0x593E017E)
+I (..\Gizwits\gizwits_protocol.h)(0x5E1408D3)
+I (H:\keil5\ARM\ARMCC\include\stdbool.h)(0x574E3E26)
+I (H:\keil5\ARM\ARMCC\include\stdio.h)(0x574E3E26)
+I (H:\keil5\ARM\ARMCC\include\stdlib.h)(0x574E3E26)
+I (H:\keil5\ARM\ARMCC\include\string.h)(0x574E3E26)
+F (..\HARDWARE\KEY\key.c)(0x582E7B54)(--c99 -c --cpu Cortex-M3 -g -O0 --apcs=interwork -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\HARDWARE\LED -I ..\HARDWARE\KEY -I ..\HARDWARE\USART3 -I ..\HARDWARE\TIMER -I ..\HARDWARE\BEEP -I ..\Gizwits-I"F:\毕设\毕业设计\软件资料\ESP8266完整版\3.机智云IOT实验-3 多路控制（LED 蜂鸣器）实验\（寄存器版，适合战舰V3或精英F103开发板）\USER\RTE"-IH:\keil5\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include-IH:\keil5\ARM\CMSIS\Include-D__UVISION_VERSION="521" -DSTM32F10X_HD -DSTM32F10X_HD-o ..\obj\key.o --omf_browse ..\obj\key.crf --depend ..\obj\key.d)
+I (..\HARDWARE\KEY\key.h)(0x582E7B54)
+I (..\SYSTEM\sys\sys.h)(0x582E7B55)
+I (..\SYSTEM\sys\stm32f10x.h)(0x582E7B55)
+I (..\SYSTEM\sys\core_cm3.h)(0x582E7B55)
+I (H:\keil5\ARM\ARMCC\include\stdint.h)(0x574E3E26)
+I (..\SYSTEM\sys\system_stm32f10x.h)(0x582E7B55)
+I (..\SYSTEM\delay\delay.h)(0x582E7B54)
+F (..\HARDWARE\BEEP\beep.c)(0x582E7AEA)(--c99 -c --cpu Cortex-M3 -g -O0 --apcs=interwork -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\HARDWARE\LED -I ..\HARDWARE\KEY -I ..\HARDWARE\USART3 -I ..\HARDWARE\TIMER -I ..\HARDWARE\BEEP -I ..\Gizwits-I"F:\毕设\毕业设计\软件资料\ESP8266完整版\3.机智云IOT实验-3 多路控制（LED 蜂鸣器）实验\（寄存器版，适合战舰V3或精英F103开发板）\USER\RTE"-IH:\keil5\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include-IH:\keil5\ARM\CMSIS\Include-D__UVISION_VERSION="521" -DSTM32F10X_HD -DSTM32F10X_HD-o ..\obj\beep.o --omf_browse ..\obj\beep.crf --depend ..\obj\beep.d)
+I (..\HARDWARE\BEEP\beep.h)(0x582E7AEA)
+I (..\SYSTEM\sys\sys.h)(0x582E7B55)
+I (..\SYSTEM\sys\stm32f10x.h)(0x582E7B55)
+I (..\SYSTEM\sys\core_cm3.h)(0x582E7B55)
+I (H:\keil5\ARM\ARMCC\include\stdint.h)(0x574E3E26)
+I (..\SYSTEM\sys\system_stm32f10x.h)(0x582E7B55)
+F (..\Gizwits\gizwits_product.c)(0x5E1412C0)(--c99 -c --cpu Cortex-M3 -g -O0 --apcs=interwork -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\HARDWARE\LED -I ..\HARDWARE\KEY -I ..\HARDWARE\USART3 -I ..\HARDWARE\TIMER -I ..\HARDWARE\BEEP -I ..\Gizwits-I"F:\毕设\毕业设计\软件资料\ESP8266完整版\3.机智云IOT实验-3 多路控制（LED 蜂鸣器）实验\（寄存器版，适合战舰V3或精英F103开发板）\USER\RTE"-IH:\keil5\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include-IH:\keil5\ARM\CMSIS\Include-D__UVISION_VERSION="521" -DSTM32F10X_HD -DSTM32F10X_HD-o ..\obj\gizwits_product.o --omf_browse ..\obj\gizwits_product.crf --depend ..\obj\gizwits_product.d)
+I (H:\keil5\ARM\ARMCC\include\stdio.h)(0x574E3E26)
+I (H:\keil5\ARM\ARMCC\include\string.h)(0x574E3E26)
+I (..\Gizwits\gizwits_protocol.h)(0x5E1408D3)
+I (H:\keil5\ARM\ARMCC\include\stdint.h)(0x574E3E26)
+I (H:\keil5\ARM\ARMCC\include\stdbool.h)(0x574E3E26)
+I (H:\keil5\ARM\ARMCC\include\stdlib.h)(0x574E3E26)
+I (..\Gizwits\gizwits_product.h)(0x593E017E)
+I (..\HARDWARE\LED\led.h)(0x582E7B54)
+I (..\SYSTEM\sys\sys.h)(0x582E7B55)
+I (..\SYSTEM\sys\stm32f10x.h)(0x582E7B55)
+I (..\SYSTEM\sys\core_cm3.h)(0x582E7B55)
+I (..\SYSTEM\sys\system_stm32f10x.h)(0x582E7B55)
+I (..\HARDWARE\USART3\usart3.h)(0x5E140447)
+I (..\HARDWARE\BEEP\beep.h)(0x582E7AEA)
+F (..\Gizwits\gizwits_protocol.c)(0x5E140598)(--c99 -c --cpu Cortex-M3 -g -O0 --apcs=interwork -I ..\SYSTEM\delay -I ..\SYSTEM\sys -I ..\SYSTEM\usart -I ..\HARDWARE\LED -I ..\HARDWARE\KEY -I ..\HARDWARE\USART3 -I ..\HARDWARE\TIMER -I ..\HARDWARE\BEEP -I ..\Gizwits-I"F:\毕设\毕业设计\软件资料\ESP8266完整版\3.机智云IOT实验-3 多路控制（LED 蜂鸣器）实验\（寄存器版，适合战舰V3或精英F103开发板）\USER\RTE"-IH:\keil5\ARM\PACK\Keil\STM32F1xx_DFP\2.2.0\Device\Include-IH:\keil5\ARM\CMSIS\Include-D__UVISION_VERSION="521" -DSTM32F10X_HD -DSTM32F10X_HD-o ..\obj\gizwits_protocol.o --omf_browse ..\obj\gizwits_protocol.crf --depend ..\obj\gizwits_protocol.d)
+I (..\Gizwits\gizwits_protocol.h)(0x5E1408D3)
+I (H:\keil5\ARM\ARMCC\include\stdint.h)(0x574E3E26)
+I (H:\keil5\ARM\ARMCC\include\stdbool.h)(0x574E3E26)
+I (H:\keil5\ARM\ARMCC\include\stdio.h)(0x574E3E26)
+I (H:\keil5\ARM\ARMCC\include\stdlib.h)(0x574E3E26)
+I (H:\keil5\ARM\ARMCC\include\string.h)(0x574E3E26)
+I (..\Gizwits\gizwits_product.h)(0x593E017E)
