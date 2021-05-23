@@ -43,42 +43,20 @@ a[11]：满足N[3]*MAX < total条件加1，是高优先级反转以后能够正常发送的仲裁条件之一
 
 tsend_count：本次真实的发送数量，小于等于4。
 */
+
 //定义变量
 variables
 {
-  
-  //定义定时器
+    //定义定时器
   mstimer mscycle;
   const int gFlashLightFrequency = 500;
   int gHazardLightsStatus = 0;
-  
-  
   
 } 
 
 //所有程序的start接口
 on start
 { 
-  /*k = 0;
-  L[k] = High_message1.dword(0);
-  R[k] = High_message1.dword(4);
-  blowfish();
-  
-  High_message1.dword(0) = L[k];
-  High_message1.dword(4) = R[k];
-  output(High_message1);
-  
-  k=1;
-  L[k] = High_message2.dword(0);
-  R[k] = High_message2.dword(4);
-  blowfish();
-  High_message2.dword(0) = L[k];
-  High_message2.dword(4) = R[k];
-  output(High_message2); */
-  
-  
-  
-  
   time_clear();
   //目前里面只剩下了一个计时功能
   low_task();
@@ -90,8 +68,8 @@ on start
   setTimer(mscycle,1);
   //将时间后退1ms
   Start_time_back();
-  
 }
+
 //一开始的时候调用了时间增加的函数，单数实际上定时器还没有启动，故需要在基础上再减回来
 Start_time_back()
 {
@@ -140,10 +118,11 @@ Start_time_back()
     per[9]--;
   }
 }
+
 //主程序：到达定时时间执行下面程序
 on timer mscycle
 {
-  
+  //kkkl();
   time_clear();
 
   low_task();
@@ -155,7 +134,6 @@ on timer mscycle
   clear_mark();
   
   setTimer(mscycle,1);
-  
 }
 
 /*
@@ -337,9 +315,7 @@ time_clear()
           4.每个报文发送完成以后将tsend_count加1
 */
 high_normal_task()
-{
-  int i;
-  
+{  
   if(arr[0] == 0 && tsend_count < 4)
   {
     arr[0] = 1;
@@ -361,23 +337,28 @@ high_normal_task()
     }
     
     //幅值操作
-    Data_cp();
     
     if(High_message1.id == 0x1)
-    {
+    {    
       k = 0;
-     
+      
+      Data_cp1();
       //开始加密
       L[0] = High_message1.dword(0);
       R[0] = High_message1.dword(4);
-      write("000000000001    %08lx %08lx", L[k], R[k]);
       blowfish(); 
-      write("000000000001    %08lx %08lx", L[k], R[k]);
       //将加密的数据赋给报文；
       High_message1.dword(0) = L[0];
       High_message1.dword(4) = R[0];
-
+      
+      //High_message1.qword(0) |= High_message1.qword(0);
+      //防止偷窥，就算拿到报文，发送了也没有作用
+      High_message1.qword(0) = ~High_message1.qword(0);
+      
       output(High_message1);
+      High_message1.dword(0) = L[0];
+      High_message1.dword(4) = R[0];
+      cj[0] = 1;
       tsend_count++;
     }
   }  
@@ -400,45 +381,22 @@ high_normal_task()
       cout[11] = 0;
    
     }
+    
+    
     if(High_message2.id == 0x2)
     {
-      
       k = 1;
-      Low_message12.qword(0) = High_message2.qword(0) = 0;
-      Rev_message2.qword(0) = 0;
-
-      if (@Lights::HazardLightsSwitch)
-      {
-        i++;
-      
-        if(i>0 && i* N[1] <500)
-          gHazardLightsStatus = 1;
-        else
-          gHazardLightsStatus = 0;
-        if(i* N[1]>1000)
-          i = 0;
-      }
-      @Lights::fl = gHazardLightsStatus;
-      if(@Lights::HeadLight1)
-      {
-        @Lights::HeadLight1 = 1;
-      }
-      else 
-        @Lights::HeadLight1 = 0;
-      
-      Low_message12.byte(1) = High_message2.byte(1) = @Lights::HeadLight1;
-      Low_message12.byte(0) = High_message2.byte(0) = @Lights::fl;
-
-      
-      
+      Data_cp2();      
       L[k] = High_message2.dword(0);
       R[k] = High_message2.dword(4);
+      //write("000000000002    %08lx %08lx", L[k], R[k]);
       blowfish();
+      //write("000000000002    %08lx %08lx", L[k], R[k]);
       High_message2.dword(0) = L[k];
       High_message2.dword(4) = R[k];
       
       output(High_message2);
-      cj = 1;
+      cj[1] = 1;
       tsend_count++;
     }
   }
@@ -710,12 +668,12 @@ inversion_output()
   {
     if((float)tsend_count/4 == 1.0)
     {
-      write("per1 = %f", (float)per1[2]);
+      //write("per1 = %f", (float)per1[2]);
       vv = (float)per1[2];
     }
     else
     {
-      write("per2 = %f", (float)per1[2] - (float)tsend_count/4);
+      //write("per2 = %f", (float)per1[2] - (float)tsend_count/4);
       vv = (float)per1[2] - (float)tsend_count/4;
     }
     vv = vv/(float)N1[8];
@@ -732,23 +690,35 @@ inversion_output()
   
   if(a[0] == MAX+1 && tsend_count < 4 && High_message1.id != 0x1)
   {
-    //High_message1.byte(0) = 0;
-    //High_message1.byte(1) = 0;
+    k = 0;
+    Data_cp1();
+    //开始加密
+    L[0] = High_message1.dword(0);
+    R[0] = High_message1.dword(4);
+    blowfish(); 
+    //将加密的数据赋给报文；
+    High_message1.dword(0) = L[0];
+    High_message1.dword(4) = R[0];
+    
     output(High_message1);
-    //High_message1.byte(0) = 0x11;
-    //High_message1.byte(1) = 0x22;
+    cj[0] = 1;
     tsend_count++;
     a[0]++;
   }
   
   if(a[1] == MAX+1 && tsend_count < 4 && High_message2.id != 0x2)
   {
-    //High_message2.byte(0) = 0;
-    //High_message2.byte(1) = 0;
+    k = 1;
+    Data_cp2();      
+    L[k] = High_message2.dword(0);
+    R[k] = High_message2.dword(4);
+    blowfish();
+    High_message2.dword(0) = L[k];
+    High_message2.dword(4) = R[k];
+    
     output(High_message2); 
-    //High_message2.byte(0) = 0x11;
-    //High_message2.byte(1) = 0x22;
-    tsend_count++;
+    cj[1] = 1;
+     tsend_count++;
     a[1]++;
   }
   
@@ -834,33 +804,61 @@ clear_mark()
 
 
 
-
-
-
-
-Data_cp()
+Data_cp1()
 {
   //开始直接将发送报文清零
   Low_message11.qword(0) = High_message1.qword(0) = 0;
-  Rev_message1.qword(0) = 0;
+  //Rev_message1.qword(0) = 0;
   if(@sysvar::Engine::EngineStateSwitch) 
   {   
     //读取报文
     Low_message11.dword(0) = High_message1.dword(0) = @Engine::EngineSpeedEntry;
-    Low_message11.byte(2) = High_message1.byte(2) = 1;
+    Low_message11.byte(2) = High_message1.byte(2) = @Engine::EngineStateSwitch;
     
-    Rev_message1.dword(0) = @Engine::EngineSpeedEntry;
-    Rev_message1.byte(2) = 1;
-    @Engine::kkk = 1;//启动汽车图标
   }
   else
   {
     Low_message11.dword(0) = High_message1.dword(0) = 0;
     Low_message11.byte(2) = High_message1.byte(2) = 0;
-    Rev_message1.dword(0) = 0;
-    Rev_message1.byte(2) = 0;
     @Engine::kkk = 0;
   }
 }
+
+Data_cp2()
+{
+  int ii;
+  Low_message12.qword(0) = High_message2.qword(0) = 0;
+
+  if (@Lights::HazardLightsSwitch)
+  {
+    ii++;
+  
+    if(ii>0 && ii* N[1] <500)
+      gHazardLightsStatus = 1;
+    else
+      gHazardLightsStatus = 0;
+    if(ii* N[1]>1000)
+      ii = 0;
+  }
+  else
+    gHazardLightsStatus = 0;
+  @Lights::fl = gHazardLightsStatus;
+  if(@Lights::HeadLight1)
+  {
+    @Lights::HeadLight1 = 1;
+  }
+  else 
+    @Lights::HeadLight1 = 0;
+  
+  Low_message12.byte(1) = High_message2.byte(1) = @Lights::HeadLight1;
+  Low_message12.byte(0) = High_message2.byte(0) = @Lights::fl;
+}
+
+
+
+
+
+
+
 
 

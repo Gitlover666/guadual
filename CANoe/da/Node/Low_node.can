@@ -1,9 +1,4 @@
 /*@!Encoding:936*/
-includes
-{
-  #include "bl.can"
-}
-
 /*
 arr是触发标志位
 cout是计数标志位
@@ -12,7 +7,27 @@ per是周期标志位
 
 variables
 {
-
+  int cout1[20];
+  int arr1[20];
+  int per1[7];
+  float jj;
+  //在这里改变次数
+  //int N1[9]={1, 2, 4, 5, 10, 15, 20, 25, 30};
+  int N1[9]={1, 2, 4, 5, 20, 20, 30, 30, 30};
+  //int N1[9]={1, 2, 4, 5, 2220, 22220, 32220, 32220, 32220};
+  //int N1[9]={1, 2, 4, 5, 30, 30, 40, 50, 60};//未满负载
+  int c11, c22, c33=0;
+  //定义低重要程度的报文
+  message 0x201 Low_message1 = {dlc=8};
+  message 0x202 Low_message2 = {dlc=8};
+  message 0x203 Low_message3 = {dlc=8};
+  message 0x204 Low_message4 = {dlc=8,byte(0)=0x11};
+  message 0x205 Low_message5 = {dlc=8};
+  message 0x206 Low_message6 = {dlc=8,byte(0)=0x1};
+  message 0x207 Low_message7 = {dlc=8,byte(0)=0x1};
+  message 0x208 Low_message8 = {dlc=8,byte(0)=0x22,byte(0)=0x12};
+  message 0x209 Low_message9 = {dlc=8,byte(0)=0x1};
+  message 0x210 Low_message10 = {dlc=8}; 
 } 
 
 low_task()
@@ -60,24 +75,5 @@ low_task()
   per1[4]++;
   per1[5]++;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

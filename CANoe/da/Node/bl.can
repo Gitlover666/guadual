@@ -6,7 +6,8 @@ variables
   int total = 6;
   int cout[20];
   int arr[10];
-  int N[10]={10, 10, 2000, 2000, 5000, 5000, 5000, 5000, 10000, 10000};
+  //int N[10]={1, 1, 2, 2, 5, 5, 5, 5, 10, 10};
+  int N[10]={1, 1, 5, 5, 10, 10, 10, 10, 10, 10};
   //int N[10]={2, 2, 10, 10, 15, 15, 15,15, 15,15};//50
   //int N[10]={2, 2, 5, 5, 10, 10, 10,10, 10,10};//60
   //int N[10]={2, 2, 5, 5, 5, 5, 5,5, 10,10};//70
@@ -18,7 +19,7 @@ variables
   int tsend_count = 0;
   float vv;
   
-  int cj;
+  int cj[10];
   int k;
   long headLight;
   long hazardFlasher;
@@ -34,50 +35,12 @@ variables
   message 0x8 High_message8 = {dlc=8,byte(0)=0x12};
   message 0x9 High_message9 = {dlc=8};
   message 0x10 High_message10 = {dlc=8,byte(0)=0x12};
+    
   
-  message 0x401 Rev_message1 = {dlc=8,byte(0)=0x12};
-  message 0x402 Rev_message2 = {dlc=8,byte(0)=0x12};
-  
-
-  
-  
-  
-  //di
-  
-  
-  
-  
-  int cout1[20];
-  int arr1[20];
-  int per1[7];
-  float jj;
-  //在这里改变次数
-  //int N1[9]={1, 2, 4, 5, 10, 15, 20, 25, 30};
-  //int N1[9]={1, 2, 4, 5, 20, 20, 30, 30, 30};
-  int N1[9]={1, 2, 4, 5, 2220, 22220, 32220, 32220, 32220};
-  //int N1[9]={1, 2, 4, 5, 30, 30, 40, 50, 60};//未满负载
-  int c11, c22, c33=0;
-  //定义低重要程度的报文
-  message 0x201 Low_message1 = {dlc=8};
-  message 0x202 Low_message2 = {dlc=8};
-  message 0x203 Low_message3 = {dlc=8};
-  message 0x204 Low_message4 = {dlc=8,byte(0)=0x11};
-  message 0x205 Low_message5 = {dlc=8};
-  message 0x206 Low_message6 = {dlc=8,byte(0)=0x1};
-  message 0x207 Low_message7 = {dlc=8,byte(0)=0x1};
-  message 0x208 Low_message8 = {dlc=8,byte(0)=0x22,byte(0)=0x12};
-  message 0x209 Low_message9 = {dlc=8,byte(0)=0x1};
-  message 0x210 Low_message10 = {dlc=8};
-  
-  
-  
+  //用来接收节点加密的时候使用，不需要发送
   message 0x211 Low_message11;
   message 0x212 Low_message12;
-
   
-  //gao
-  
-  //这里的qword留一个疑问，是不是可以转换成dword
   //在C语言中使用的是0x243F6A88L，代表long数据，选择在capl用这种，效果一样
   dword ORIG_P[18] = {
         0x243F6A88, 0x85A308D3, 0x13198A2E, 0x03707344,
@@ -349,6 +312,7 @@ variables
 
   
   
+  
   const int NN = 16;
   struct BLOWFISH_CTX
   {
@@ -357,29 +321,17 @@ variables
   };
   
   struct BLOWFISH_CTX ctx;
-  dword  L[10]= 0x1, R[10] = 0x2;
+  dword  L[10], R[10];
   //dword  L=1, R=2, L1=1, R1=2, L2, R2, L3, R3, L4, R4, L5, R5, L6, R6, L7, R7, L8, R8, L9, R9;
   //char key1[7] = {'T','E','S','T','K','E','Y'};
-  char key1[8] = "TESTKEY";
+  //这里的key可以动态变换
+  
+  char key1[449] = "TESTKEY";
   dword  data=0, datal=0, datar=0;
-  
-  
-  
-  //display
   const long kOFF = 0;
   const long kON = 1;
-
   int gDebugCounter = 0;
 }
-
-
-
-
-
-
-
-
-
 
 
  dword F(dword x)
@@ -401,46 +353,15 @@ variables
 }
 
 
-
-
 void Blowfish_Encrypt()
   {
     dword  Xl1, Xr1, temp1;
     word i;
     Xl1 = 0; Xr1 = 0; temp1 = 0;
+ 
+    Xl1 = L[k];
+    Xr1 = R[k];
     
-    switch(k)
-    {
-      case 0:
-      {
-        Xl1 = L[k];
-        Xr1 = R[k];
-        
-        break;
-      }
-      case 1:
-      {
-        Xl1 = L[k];
-        Xr1 = R[k];
-        
-        break;
-      }
-      case 8:
-        {
-          Xl1 = L[k];
-          Xr1 = R[k];
-         
-          break;
-        }
-      case 9:
-      {
-        Xl1 = L[k];
-        Xr1 = R[k];
-        
-        break;
-      }
-    }
-      
     for (i = 0; i < NN; ++i) 
     {
       Xl1 = Xl1 ^ ctx.P[i];//异或
@@ -454,46 +375,22 @@ void Blowfish_Encrypt()
     Xr1 = temp1;
     Xr1 = Xr1 ^ ctx.P[NN];
     Xl1 = Xl1 ^ ctx.P[NN + 1];//多个报文考虑这样L=L1=....=LN=XL1
-   /* switch(k)
-    {
-      case 0:
-      {
-        L[k] = Xl1;
-        R[k] = Xr1;
-        break;
-      }
-      case 1:
-      {
-        L[k] = Xl1;
-        R[k] = Xr1;
-        break;
-      }
-      case 9:
-      {
-        L[k] = Xl1;
-        R[k] = Xr1;
-        
-        break;
-      }
-    }*/
-    
+  
     L[k] = Xl1;
     R[k] = Xr1;
 }
 
-//1
+  
 void Blowfish_Encrypt1()
   {
     dword  Xl, Xr, temp;
     word i;
     Xl = 0; Xr = 0; temp = 0;
     Xl = datal;
-    //write("%d", datal);
     Xr = datar;
     for (i = 0; i < NN; ++i) 
     {
       Xl = Xl ^ ctx.P[i];
-      
       Xr = F(Xl) ^ Xr;
       temp = Xl;
       Xl = Xr;
@@ -507,7 +404,6 @@ void Blowfish_Encrypt1()
     Xl = Xl ^ ctx.P[NN + 1];
     datal = Xl;
     datar = Xr;
-    
   }
 
 //这里局部函数在这里定义的变量都是静态变量
@@ -517,78 +413,28 @@ void Blowfish_Decrypt()
     dword  Xl3, Xr3, temp3;
     word i;
     Xl3 = 0; Xr3 = 0; temp3 = 0;
-      switch(k)
-      {
-        case 0:
-        {
-          Xl3 = L[k];
-          Xr3 = R[k]; 
-          break;
-        }
-        case 1:
-        {
-          Xl3 = L[k];
-          Xr3 = R[k];
-         
-          break;
-        }
-        case 8:
-        {
-          Xl3 = L[k];
-          Xr3 = R[k];
-         
-          break;
-        }
-        case 9:
-        {
-          Xl3 = L[k];
-          Xr3 = R[k];
-         
-          break;
-        }
-      }
-      for (i = NN + 1; i > 1; --i) 
-      {
-        Xl3 = Xl3 ^ ctx.P[i];
-        Xr3 = F(Xl3) ^ Xr3;
-        /* Exchange Xl and Xr */
-        temp3 = Xl3;
-        Xl3 = Xr3;
-        Xr3 = temp3;
-      }
-
+    Xl3 = L[k];
+    Xr3 = R[k]; 
+    
+    for (i = NN + 1; i > 1; --i) 
+    {
+      Xl3 = Xl3 ^ ctx.P[i];
+      Xr3 = F(Xl3) ^ Xr3;
       /* Exchange Xl and Xr */
       temp3 = Xl3;
       Xl3 = Xr3;
       Xr3 = temp3;
-      Xr3 = Xr3 ^ ctx.P[1];
-      Xl3 = Xl3 ^ ctx.P[0];
-      /*switch(k)
-      {
-        case 0:
-        {
-          L[k] = Xl3;
-          R[k] = Xr3;
-          break;
-        }
-        case 1:
-        {
-          L[k] = Xl3;
-          R[k] = Xr3;
-          break;
-        }
-        case 9:
-        {
-          Xl3 = L[k];
-          Xr3 = R[k];
-         
-          break;
-        }
-      
-      }*/
-      L[k] = Xl3;
-      R[k] = Xr3;
+    }
+
+    /* Exchange Xl and Xr */
+    temp3 = Xl3;
+    Xl3 = Xr3;
+    Xr3 = temp3;
+    Xr3 = Xr3 ^ ctx.P[1];
+    Xl3 = Xl3 ^ ctx.P[0];
     
+    L[k] = Xl3;
+    R[k] = Xr3;
 }
 
 
@@ -614,7 +460,6 @@ void Blowfish_Init(int keyLen)
       }
     ctx.P[i] = ORIG_P[i] ^ data;
     }
-    
   datal = 0x00000000;
   datar = 0x00000000;
   for (i = 0; i < NN + 2; i += 2) 
@@ -636,36 +481,24 @@ void Blowfish_Init(int keyLen)
 }
 
 
-
-
-
-
-
 void blowfish()
   { 
     int i;
     
-    
-
-    for(i=0; i<100; i++)
+    for(i=0; i<449; i++)
     {
-      if(key1[i] == 0)
+      if(key1[i] == '\0')
       {
         write("   %d", i);
         break;
       }
     }
+
+
     Blowfish_Init(i);
     Blowfish_Encrypt();
-    
-
-    
-   
-    
-    
+        
     /*
-    if(k == 0)
-    {
       write("%08lx %08lx", L, R);
     if (L == 0xDF333FD2 && R == 0x30A71BB4)
       write("Test encryption OK.");
@@ -677,31 +510,30 @@ void blowfish()
     	write("Test decryption OK.");
     else
       write("Test decryption failed.");
-    
-    }
-    //这里字节的影响
-    
-    if(k == 1)
-    {
-      write("1111111111    %08lx %08lx", L[k], R[k]);
-      if (L[k] == 0xDF333FD2 && R[k] == 0x30A71BB4)
-      write("Test encryption OK.");
-    else
-      write("Test encryption failed.");
-    Blowfish_Decrypt();
-    write("%08x %08x", L[k], R[k]);
-    if (L[k] == 1 && R[k] == 2)
-    	write("Test decryption OK.");
-    else
-      write("Test decryption failed.");
-    }
     */
-    
 }
 
-
-
-
+ /* 
+  //长度变化成功，记得清零。
+kkkl()
+{
+  long hhhhl = 50;
+  hhhhl--;
+  for(i = 0; i<elcount(key1); i++)
+  {
+    key1[i] = '\0';
+  }
+  for(i = 0; i<elcount(key1)/hhhhl; i++)
+  {
+    key1[i] = 64 + i;
+    //write("            %c",key1[i]);
+  }
+  if(hhhhl == 20)
+  {
+    hhhhl = 50;
+  }
+}
+*/
 
 
 
